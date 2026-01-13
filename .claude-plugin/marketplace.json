@@ -8,6 +8,11 @@
       "name": "my-first-plugin",
       "source": "./plugins/my-first-plugin",
       "description": "A greeting plugin to learn the basics"
+    },
+    {
+      "name": "specs",
+      "source": "./plugins/specs",
+      "description": "Хранилище спецификаций проектов"
     }
   ]
 }
