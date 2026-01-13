@@ -8,31 +8,28 @@ description: Извлечь оглавление книги
 
 ## Шаг 1: Выбрать книгу
 
-Спроси пользователя, для какой книги нужно оглавление. Найди её ISBN в заметке книги.
+Спроси пользователя, для какой книги нужно оглавление.
 
-## Шаг 2: Попробовать автоматически
+## Шаг 2: Найти ID на ЛитРес
 
-Запусти скрипт:
+Для русскоязычных книг используй ЛитРес — лучший источник оглавлений.
+
+**Как найти ID:**
+1. Открой litres.ru и найди книгу
+2. В URL будет ID: `litres.ru/book/author/title-48514275/` → ID = `48514275`
+
+## Шаг 3: Запустить скрипт
 
 ```bash
-# ЛитРес по ID (лучший источник для русских книг!)
-# ID находится в URL: litres.ru/book/author/title-48514275/ → ID = 48514275
+# ЛитРес — основной источник (рекомендуется)
 python3 plugins/books/scripts/fetch-toc.py --litres-id "48514275"
 
-# По ISBN (Лабиринт + Open Library)
-python3 plugins/books/scripts/fetch-toc.py --isbn "978-5-00195-204-6"
-
-# По прямому URL с Лабиринта
-python3 plugins/books/scripts/fetch-toc.py --url "https://www.labirint.ru/books/580693/"
+# Open Library — для англоязычных книг
+python3 plugins/books/scripts/fetch-toc.py --isbn "9781455586691"
+python3 plugins/books/scripts/fetch-toc.py --title "Deep Work"
 ```
 
-Скрипт ищет в:
-1. **ЛитРес** — лучший источник, почти все книги имеют TOC
-2. Лабиринт — не все книги имеют оглавление
-3. Open Library — для англоязычных книг
-4. Google Books — ссылка на превью
-
-## Шаг 3: Ручной ввод (fallback)
+## Шаг 4: Ручной ввод (fallback)
 
 Если автоматически не получилось, попроси пользователя:
 
@@ -47,7 +44,7 @@ python3 plugins/books/scripts/fetch-toc.py --url "https://www.labirint.ru/books/
 Заключение
 ```
 
-## Шаг 4: Преобразовать в чеклист
+## Шаг 5: Преобразовать в чеклист
 
 Преобразуй оглавление в markdown чеклист:
 
@@ -61,7 +58,7 @@ python3 plugins/books/scripts/fetch-toc.py --url "https://www.labirint.ru/books/
 - [ ] Заключение
 ```
 
-## Шаг 5: Обновить заметку книги
+## Шаг 6: Обновить заметку книги
 
 Замени секцию "Прогресс" в заметке книги на новый чеклист.
 

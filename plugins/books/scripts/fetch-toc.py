@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Скрипт для извлечения оглавления книги.
-Источники: ЛитРес, Лабиринт, Open Library, Google Books.
+Источники: ЛитРес, Open Library, Google Books.
 """
 
 import argparse
@@ -63,74 +63,6 @@ def format_litres_toc(chapters: list[dict]) -> list[str]:
         indent = "  " * (ch["deep"] - 1)
         result.append(f"{indent}{ch['title']}")
     return result
-
-
-# ==================== Лабиринт ====================
-
-def search_labirint(title: str) -> tuple[str, str] | None:
-    """Найти книгу на Лабиринте и вернуть (URL, название)."""
-    search_url = f"https://www.labirint.ru/search/{urllib.parse.quote(title)}/?stype=0"
-    html = fetch_url(search_url)
-    if not html:
-        return None
-
-    match = re.search(r'href="(/books/\d+/)"', html)
-    if match:
-        book_url = f"https://www.labirint.ru{match.group(1)}"
-        title_match = re.search(r'class="[^"]*product-title[^"]*"[^>]*>([^<]+)<', html)
-        found_title = title_match.group(1).strip() if title_match else "Неизвестно"
-        return (book_url, found_title)
-    return None
-
-
-def fetch_labirint_by_isbn(isbn: str) -> str | None:
-    """Найти книгу на Лабиринте по ISBN."""
-    search_url = f"https://www.labirint.ru/search/{isbn}/?stype=0"
-    html = fetch_url(search_url)
-    if not html:
-        return None
-
-    match = re.search(r'href="(/books/\d+/)"', html)
-    if match:
-        return f"https://www.labirint.ru{match.group(1)}"
-    return None
-
-
-def fetch_labirint_toc(url: str) -> list[str] | None:
-    """Извлечь оглавление со страницы книги на Лабиринте."""
-    html = fetch_url(url)
-    if not html:
-        return None
-
-    chapters = []
-    toc_match = re.search(
-        r'\[\],"(Введение[^"]+|Предисловие[^"]+|Глава\s+1[^"]+)"',
-        html
-    )
-
-    if toc_match:
-        content = toc_match.group(1)
-        content = content.replace('\\u003C', '<').replace('\\u003E', '>')
-        content = re.sub(r'</?br\s*/?>', '\n', content, flags=re.IGNORECASE)
-        content = re.sub(r'<[^>]+>', '', content)
-        content = unescape(content)
-
-        for line in content.split('\n'):
-            line = line.strip()
-            if line and len(line) > 2:
-                if re.match(r'^(Введение|Предисловие|Заключение|Послесловие|Эпилог|Приложени|Глава|Часть|Раздел|\d+\.)', line, re.IGNORECASE):
-                    chapters.append(line)
-
-    if chapters:
-        seen = set()
-        unique = []
-        for ch in chapters:
-            if ch not in seen:
-                seen.add(ch)
-                unique.append(ch)
-        return unique[:100]
-
-    return None
 
 
 # ==================== Open Library ====================
@@ -224,26 +156,25 @@ def format_as_checklist(chapters: list[str]) -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Извлечь оглавление книги (ЛитРес, Лабиринт, Open Library)"
+        description="Извлечь оглавление книги (ЛитРес, Open Library)"
     )
-    parser.add_argument("--isbn", help="ISBN книги")
-    parser.add_argument("--title", help="Название книги")
-    parser.add_argument("--url", help="Прямой URL страницы книги на Лабиринте")
-    parser.add_argument("--litres-id", help="ID книги на ЛитРес (число)")
+    parser.add_argument("--isbn", help="ISBN книги (для Open Library)")
+    parser.add_argument("--title", help="Название книги (для Open Library)")
+    parser.add_argument("--litres-id", help="ID книги на ЛитРес (число из URL)")
     parser.add_argument("--format", choices=["json", "markdown"], default="markdown",
                         help="Формат вывода (default: markdown)")
 
     args = parser.parse_args()
 
-    if not args.isbn and not args.title and not args.url and not args.litres_id:
-        print("Укажи --isbn, --title, --url или --litres-id", file=sys.stderr)
+    if not args.isbn and not args.title and not args.litres_id:
+        print("Укажи --litres-id (рекомендуется) или --isbn / --title", file=sys.stderr)
         sys.exit(1)
 
     chapters = None
     source = None
     book_url = None
 
-    # 1. Если указан ID ЛитРес напрямую
+    # 1. ЛитРес — основной источник для русскоязычных книг
     if args.litres_id:
         print(f"Загружаю с ЛитРес (ID: {args.litres_id})...", file=sys.stderr)
         litres_chapters = fetch_litres_toc(args.litres_id)
@@ -252,36 +183,8 @@ def main():
             source = "ЛитРес"
             book_url = f"https://www.litres.ru/book/-{args.litres_id}/"
 
-    # 2. Если указан прямой URL Лабиринта
-    if not chapters and args.url:
-        print(f"Загружаю {args.url}...", file=sys.stderr)
-        chapters = fetch_labirint_toc(args.url)
-        if chapters:
-            source = "Лабиринт"
-            book_url = args.url
-
-    # 3. Пробуем Лабиринт по ISBN или названию
-    if not chapters:
-        print("Ищу на Лабиринте...", file=sys.stderr)
-        labirint_url = None
-
-        if args.isbn:
-            labirint_url = fetch_labirint_by_isbn(args.isbn)
-        elif args.title:
-            result = search_labirint(args.title)
-            if result:
-                labirint_url, found_title = result
-                print(f"Найдена книга: \"{found_title}\"", file=sys.stderr)
-
-        if labirint_url:
-            print(f"URL: {labirint_url}", file=sys.stderr)
-            book_url = labirint_url
-            chapters = fetch_labirint_toc(labirint_url)
-            if chapters:
-                source = "Лабиринт"
-
-    # 4. Пробуем Open Library (для англоязычных книг)
-    if not chapters:
+    # 2. Open Library — для англоязычных книг
+    if not chapters and (args.isbn or args.title):
         print("Ищу в Open Library...", file=sys.stderr)
         ol_data = fetch_open_library(isbn=args.isbn, title=args.title)
         if ol_data:
@@ -289,8 +192,8 @@ def main():
             if chapters:
                 source = "Open Library"
 
-    # 5. Пробуем Google Books (только для ссылки на превью)
-    if not chapters:
+    # 3. Google Books — только для ссылки на превью
+    if not chapters and (args.isbn or args.title):
         print("Ищу в Google Books...", file=sys.stderr)
         gb_data = fetch_google_books(isbn=args.isbn, title=args.title)
         if gb_data:
