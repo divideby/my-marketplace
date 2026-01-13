@@ -13,6 +13,11 @@
       "name": "specs",
       "source": "./plugins/specs",
       "description": "Хранилище спецификаций проектов"
+    },
+    {
+      "name": "books",
+      "source": "./plugins/books",
+      "description": "Пайплайн чтения книг по методологии Поварнина"
     }
   ]
 }

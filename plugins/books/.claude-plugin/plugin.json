@@ -1,0 +1,8 @@
+{
+  "name": "books",
+  "description": "Пайплайн чтения книг по методологии Поварнина",
+  "version": "1.0.0",
+  "author": {
+    "name": "divideby"
+  }
+}
