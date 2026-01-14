@@ -15,7 +15,7 @@ import re
 from datetime import datetime, date
 from pathlib import Path
 
-VAULT_PATH = Path(os.path.expanduser("~/Yandex.Disk/Ocean/new-ocean"))
+VAULT_PATH = Path.cwd()  # Use current directory as vault root
 TODAY = date.today().isoformat()
 
 # Task regex pattern

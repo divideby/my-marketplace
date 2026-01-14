@@ -5,7 +5,9 @@ allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "AskUserQuestio
 
 # Daily Planning Protocol
 
-Execute morning planning workflow for Obsidian vault at `/home/divideby/Yandex.Disk/Ocean/new-ocean/`.
+Execute morning planning workflow for Obsidian vault.
+
+**Assumes**: Claude is running from the vault's root directory.
 
 ## Workflow Overview
 
@@ -20,7 +22,7 @@ Execute morning planning workflow for Obsidian vault at `/home/divideby/Yandex.D
 
 ## Step 1: Load Patterns
 
-Read patterns from user's vault: `/home/divideby/Yandex.Disk/Ocean/new-ocean/.claude/day-patterns.md`
+Read patterns from vault: `.claude/day-patterns.md` (relative to current directory)
 
 (If file doesn't exist, see `${CLAUDE_PLUGIN_ROOT}/settings/patterns.example.md` for template)
 
@@ -66,7 +68,7 @@ Read and present ALL tasks from these sources:
 ### 3.1 Due Today
 ```
 Grep for: 📅 {today's date}
-Path: /home/divideby/Yandex.Disk/Ocean/new-ocean/
+Path: ./
 ```
 
 ### 3.2 Dailies Inbox (no due date)
@@ -76,7 +78,7 @@ Tasks WITHOUT `📅` in recent daily notes.
 Tasks with dates before today.
 
 ### 3.4 Global Inbox
-Read `/home/divideby/Yandex.Disk/Ocean/new-ocean/Inbox.md`
+Read `./Inbox.md`
 
 **Present grouped**:
 ```

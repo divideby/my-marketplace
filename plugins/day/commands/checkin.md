@@ -19,7 +19,7 @@ Handle task completion and provide next action.
 ## Step 1: Load Context
 
 1. Get current time: `date`
-2. Read today's daily note: `/home/divideby/Yandex.Disk/Ocean/new-ocean/Dailies/YYYY-MM-DD.md`
+2. Read today's daily note: `./Dailies/YYYY-MM-DD.md`
 3. Parse the `## Расписание` DataviewJS block to find:
    - Current time block (what should be happening now)
    - Previous block (what user likely just finished)

@@ -9,7 +9,7 @@ Use this skill when working with daily planning, task management, or schedule ge
 
 ## Vault Location
 
-**Path**: `/home/divideby/Yandex.Disk/Ocean/new-ocean/`
+**Path**: `./`
 
 ## Task Sources
 
@@ -46,7 +46,7 @@ path does not include _templates
 ```
 
 ### 4. General Inbox
-Check `/home/divideby/Yandex.Disk/Ocean/new-ocean/Inbox.md` for aggregated unscheduled tasks.
+Check `./Inbox.md` for aggregated unscheduled tasks.
 
 ## Task Format
 

@@ -61,7 +61,7 @@ For messages to send:
 
 ### 5. Update Daily Note
 
-Add tasks to today's daily note at `/home/divideby/Yandex.Disk/Ocean/new-ocean/Dailies/YYYY-MM-DD.md`:
+Add tasks to today's daily note at `./Dailies/YYYY-MM-DD.md`:
 - Under `## Задачи` in the `> [!todo]` callout
 - Group under `> **После встречи [Meeting name]:**`
 
@@ -72,7 +72,7 @@ If significant meeting, offer to create a meeting note:
 Хочешь создать заметку по встрече в Base/?
 ```
 
-If yes, create at `/home/divideby/Yandex.Disk/Ocean/new-ocean/Base/Meetings/YYYY-MM-DD Meeting Name.md` with:
+If yes, create at `./Base/Meetings/YYYY-MM-DD Meeting Name.md` with:
 - Date, participants
 - Key decisions
 - Action items (linked)

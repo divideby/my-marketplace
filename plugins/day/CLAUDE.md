@@ -10,9 +10,9 @@
 - Интерактивное сопровождение в течение дня
 - Обработка результатов встреч
 
-## Целевой vault
+## Требования
 
-`/home/divideby/Yandex.Disk/Ocean/new-ocean/`
+Запускай Claude Code из корня Obsidian vault'а.
 
 ## Структура
 
