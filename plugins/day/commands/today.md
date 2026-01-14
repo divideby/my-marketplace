@@ -20,7 +20,11 @@ Execute morning planning workflow for Obsidian vault at `/home/divideby/Yandex.D
 
 ## Step 1: Load Patterns
 
-Read `${CLAUDE_PLUGIN_ROOT}/settings/patterns.md` to understand:
+Read patterns from user's vault: `/home/divideby/Yandex.Disk/Ocean/new-ocean/.claude/day-patterns.md`
+
+(If file doesn't exist, see `${CLAUDE_PLUGIN_ROOT}/settings/patterns.example.md` for template)
+
+Use patterns to understand:
 - Typical times for recurring activities
 - Fixed events (cannot be moved)
 - User's time preferences
