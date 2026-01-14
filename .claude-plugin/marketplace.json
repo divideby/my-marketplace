@@ -18,6 +18,11 @@
       "name": "day",
       "source": "./plugins/day",
       "description": "Протокол дня: планирование и сопровождение с Obsidian-задачами"
+    },
+    {
+      "name": "planning",
+      "source": "./plugins/planning",
+      "description": "Стратегическое планирование: неделя, месяц, квартал, полгода, год"
     }
   ]
 }
