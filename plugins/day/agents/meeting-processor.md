@@ -1,7 +1,7 @@
 ---
 name: meeting-processor
 color: purple
-model: sonnet
+model: opus
 whenToUse: >-
   Activates when user mentions completing a meeting, call, or sync.
   Trigger phrases: "встреча прошла", "закончили звонок", "созвон закончился",
