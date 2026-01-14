@@ -1,7 +1,7 @@
 {
   "name": "recipes",
-  "version": "0.1.0",
-  "description": "Управление рецептами в Obsidian: добавление и подбор по продуктам",
+  "version": "0.2.0",
+  "description": "Управление рецептами в Obsidian: добавление, подбор и готовка с фидбеком",
   "author": {
     "name": "divideby"
   }
