@@ -40,10 +40,22 @@ Get current time with `date +%Y-%m-%d` and `date +%H:%M` — this is when planni
 ### Auto-detect completed activities
 
 **Check for reading session today:**
+
 ```bash
 ls Base/Сессия-*-$(date +%Y-%m-%d).md 2>/dev/null
 ```
-If file exists → reading is done today.
+
+If file exists:
+1. Read the file
+2. Extract `started` and `ended` times from frontmatter
+3. Add to schedule as completed: `{ time: "started", end: "ended", task: "✅ Чтение: [book name]", color: "#60a5fa44" }`
+
+Example frontmatter:
+```yaml
+started: 08:15
+ended: 09:00
+book: "[[Deep Work]]"
+```
 
 ### Ask about remaining routine
 
