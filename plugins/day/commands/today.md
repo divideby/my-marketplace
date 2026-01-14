@@ -35,15 +35,25 @@ Use patterns to understand:
 
 ## Step 2: What's Already Done
 
-Get current time with `date` command — this is when planning starts.
+Get current time with `date +%Y-%m-%d` and `date +%H:%M` — this is when planning starts.
 
-Ask user about morning routine (use AskUserQuestion with multiSelect=true):
+### Auto-detect completed activities
+
+**Check for reading session today:**
+```bash
+ls Base/Сессия-*-$(date +%Y-%m-%d).md 2>/dev/null
+```
+If file exists → reading is done today.
+
+### Ask about remaining routine
+
+Based on auto-detection, ask user about what else is done (use AskUserQuestion with multiSelect=true):
 ```
 Question: "Сейчас [TIME]. Что из утренней рутины уже сделано?"
 Options:
 - "Завтрак"
 - "Медитация/дневник"
-- "Чтение"
+- "Чтение" (pre-select if session file found)
 - "Самообразование"
 ```
 
