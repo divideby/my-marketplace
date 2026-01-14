@@ -81,6 +81,16 @@ Instructions Claude follows when skill is active.
 4. Add skills in `skills/<skill-name>/SKILL.md` (optional)
 5. Register in `.claude-plugin/marketplace.json`
 
+## Versioning
+
+Marketplace подключается через GitHub — **обновляй версию** в `plugin.json` при значимых изменениях:
+
+- `0.1.0` → `0.1.1` — фиксы, мелкие изменения
+- `0.1.0` → `0.2.0` — новая функциональность
+- `0.x.x` → `1.0.0` — стабильный релиз
+
+Без обновления версии Claude Code может не подтянуть изменения из кеша.
+
 ---
 
 ## Plugin Development Reference
