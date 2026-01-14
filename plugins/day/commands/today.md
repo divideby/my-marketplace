@@ -7,52 +7,77 @@ allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "AskUserQuestio
 
 Execute morning planning workflow for Obsidian vault at `/home/divideby/Yandex.Disk/Ocean/new-ocean/`.
 
-## Workflow
+## Workflow Overview
 
-1. **Check current time** with `date` command
-2. **Collect all tasks** (show to user)
-3. **Ask for day's focus**
-4. **Generate schedule** and write to daily note
-
----
-
-## Step 1: Get Current Date
-
-Run `date +%Y-%m-%d` to determine today's date for the daily note filename.
+1. **Загрузить паттерны** — привычные времена из settings/patterns.md
+2. **Что уже сделано** — утренняя рутина до планирования
+3. **Собрать задачи** — due today, inbox, просроченные
+4. **Фиксированные события** — встречи и события, которые НЕЛЬЗЯ перенести
+5. **Фокусы дня** — приоритеты для свободного времени
+6. **Сгенерировать расписание** — с учётом всего выше
 
 ---
 
-## Step 2: Collect Tasks
+## Step 1: Load Patterns
+
+Read `${CLAUDE_PLUGIN_ROOT}/settings/patterns.md` to understand:
+- Typical times for recurring activities
+- Fixed events (cannot be moved)
+- User's time preferences
+
+---
+
+## Step 2: What's Already Done
+
+Ask user about morning routine:
+
+```
+Сейчас [TIME]. Что из утренней рутины уже сделано?
+```
+
+Use AskUserQuestion with multiSelect=true:
+```
+Question: "Что уже сделано сегодня?"
+Options:
+- "Завтрак"
+- "Медитация/дневник"
+- "Чтение"
+- "Самообразование"
+```
+
+Also ask:
+```
+Question: "Во сколько начинаем планируемую часть дня?"
+```
+(Default: current time or 10:00 if earlier)
+
+**Record start time** — this is when the planned schedule begins.
+
+---
+
+## Step 3: Collect Tasks
 
 Read and present ALL tasks from these sources:
 
-### 2.1 Due Today
-Search for tasks with today's date (`📅 YYYY-MM-DD`):
+### 3.1 Due Today
 ```
-Grep pattern: "📅 {today's date}"
+Grep for: 📅 {today's date}
 Path: /home/divideby/Yandex.Disk/Ocean/new-ocean/
 ```
 
-### 2.2 Dailies Inbox (no due date)
-Read recent daily notes and find tasks WITHOUT `📅` date:
-```
-Path: /home/divideby/Yandex.Disk/Ocean/new-ocean/Dailies/
-Look for: - [ ] ... #task (without 📅)
-```
+### 3.2 Dailies Inbox (no due date)
+Tasks WITHOUT `📅` in recent daily notes.
 
-### 2.3 Overdue Tasks
-Search for tasks with dates before today:
-```
-Grep for: 📅 YYYY-MM-DD where date < today
-```
+### 3.3 Overdue Tasks
+Tasks with dates before today.
 
-### 2.4 Global Inbox
-Read `/home/divideby/Yandex.Disk/Ocean/new-ocean/Inbox.md` for overview.
+### 3.4 Global Inbox
+Read `/home/divideby/Yandex.Disk/Ocean/new-ocean/Inbox.md`
 
-**Present tasks grouped**:
+**Present grouped**:
 ```
-## Задачи на сегодня (due today)
-- task 1
+## Задачи на сегодня
+- task 1 (⏫)
 - task 2
 
 ## Без даты (inbox)
@@ -64,78 +89,120 @@ Read `/home/divideby/Yandex.Disk/Ocean/new-ocean/Inbox.md` for overview.
 
 ---
 
-## Step 3: Ask for Focus
+## Step 4: Fixed Events (CANNOT be moved)
 
-Use AskUserQuestion:
+**Critical step** — identify events that MUST happen at specific times.
+
+Ask user:
+```
+Question: "Какие фиксированные события сегодня? (встречи, звонки, события которые нельзя перенести)"
+```
+
+For each event, get:
+- Name
+- Start time
+- End time (or duration)
+- Can it be skipped? (default: no)
+
+**Check patterns file** for recurring fixed events (e.g., if today is ~14th, remind about rent payment at 19:00).
+
+**These events are ANCHORS** — schedule builds around them.
+
+---
+
+## Step 5: Day Focus
+
+Now that we know constraints, ask about priorities for FREE time:
 
 ```
-Question: "Какие обязательные фокусы на сегодня?"
+Question: "Какие фокусы на свободное время?"
 Options:
 - "Deep work / coding"
 - "Встречи и коммуникация"
 - "Админ задачи"
-- Other (free text)
-```
-
-Also ask:
-```
-Question: "Есть ли встречи или жёсткие блоки времени?"
+- Other
 ```
 
 ---
 
-## Step 4: Generate Schedule
+## Step 6: Generate Schedule
 
-Based on tasks and focus, create a schedule:
+Build schedule with this priority:
 
-1. **Read existing daily note** at `Dailies/YYYY-MM-DD.md` (if exists)
-2. **Plan time blocks** considering:
-   - User's stated focus areas
-   - Fixed meetings/appointments
-   - Task priorities (⏫ > 🔼 > 🔽)
-   - Natural energy patterns (deep work morning, meetings afternoon)
-3. **Generate DataviewJS schedule block** using template from skill
+### 6.1 Already Done (marked with ✅)
+Add completed morning routine at their typical times with ✅ prefix:
+```javascript
+{ time: "07:00", end: "07:30", task: "✅ Завтрак", color: "#4ade8033" },
+{ time: "07:30", end: "08:00", task: "✅ Медитация", color: "#c4b5fd44" },
+```
+
+### 6.2 Fixed Events (ANCHORS)
+Place fixed events at their exact times — these CANNOT move:
+```javascript
+{ time: "14:00", end: "15:00", task: "📌 Встреча с командой", color: "#a78bfa44" },
+{ time: "19:00", end: "19:30", task: "📌 Оплата квартиры", color: "#67e8f933" },
+```
+
+### 6.3 Fill Free Slots
+Distribute remaining tasks into free time slots based on:
+- User's focus priorities
+- Task priorities (⏫ > 🔼 > 🔽)
+- Time preferences from patterns (deep work morning, meetings afternoon)
+- Appropriate durations
+
+### 6.4 Add Breaks
+- 5-10 min between deep work blocks
+- Lunch around 13:00-14:00
+- Buffer before important meetings
 
 ### Schedule Generation Rules
 
-- Start with morning routine (breakfast, meditation)
-- Place deep work blocks in morning (08:00-12:00)
-- Schedule meetings as stated
-- Add breaks every 2-3 hours
-- Include lunch around 12:00-14:00
-- End day by 18:00-19:00
+```
+START_TIME = user's specified start time (default: current time)
+END_TIME = 19:00-20:00 or after last fixed event
 
-### Write Schedule
-
-Create/update `## Расписание` section with DataviewJS block:
-
-```dataviewjs
-const schedule = [
-  // Generated schedule items here
-];
-// ... rest of template from skill reference
+1. Mark already-done as ✅
+2. Place fixed events as 📌 anchors
+3. Identify free slots between anchors
+4. Fill slots with tasks by priority
+5. Add breaks every 2-3 hours
+6. Ensure no conflicts with fixed events
 ```
 
 ---
 
-## Step 5: Present Day Protocol
+## Step 7: Write and Present
 
-After writing schedule, tell user:
+1. Create/update `Dailies/YYYY-MM-DD.md` with DataviewJS schedule
+2. Present summary:
 
 ```
 Расписание готово!
 
-Первая задача: [next task from schedule]
+✅ Уже сделано:
+- Завтрак, медитация, чтение
 
-Когда закончишь — вызови /day:checkin чтобы отметить прогресс и получить следующую задачу.
+📌 Фиксированные события:
+- 14:00 Встреча с командой
+- 19:00 Оплата квартиры
+
+📋 Запланировано:
+- 10:00-12:00 Deep work: [task]
+- 13:00-14:00 Обед
+- 15:00-17:00 [tasks by focus]
+
+Первая задача: [next task]
+
+Когда закончишь — /day:checkin
 ```
 
 ---
 
 ## Important Notes
 
-- Use `obsidian-vault` skill knowledge for vault structure and formats
-- Always include `#task` tag when creating tasks
-- Preserve existing content in daily notes
-- Use Russian language for all output
-- Be concise — no lengthy explanations
+- **Fixed events are sacred** — never move them
+- Use `obsidian-vault` skill for vault structure
+- Check patterns.md for user's typical schedule
+- Start time = when PLANNED part begins (after morning routine)
+- Use Russian language
+- Be concise
