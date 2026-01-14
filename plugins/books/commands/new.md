@@ -55,7 +55,7 @@ python3 plugins/books/scripts/fetch-toc.py --title "Deep Work" --info
 
 ## Шаблон заметки книги
 
-Создай файл `Sources/Название книги.md`:
+Создай файл `Base/Название книги.md`:
 
 ```markdown
 ---

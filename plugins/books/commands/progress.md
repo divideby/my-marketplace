@@ -8,10 +8,10 @@ description: Показать прогресс чтения
 
 ## Шаг 1: Найти активные книги
 
-Найди все файлы в `Sources/` со статусом `reading`:
+Найди все файлы в `Base/` со статусом `reading`:
 
 ```bash
-grep -l "status: reading" Sources/*.md
+grep -l "status: reading" Base/*.md
 ```
 
 ## Шаг 2: Для каждой книги собрать статистику
