@@ -23,6 +23,11 @@
       "name": "planning",
       "source": "./plugins/planning",
       "description": "Стратегическое планирование: неделя, месяц, квартал, полгода, год"
+    },
+    {
+      "name": "recipes",
+      "source": "./plugins/recipes",
+      "description": "Управление рецептами: добавление и подбор по продуктам"
     }
   ]
 }

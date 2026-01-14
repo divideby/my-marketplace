@@ -1,0 +1,8 @@
+{
+  "name": "recipes",
+  "version": "0.1.0",
+  "description": "Управление рецептами в Obsidian: добавление и подбор по продуктам",
+  "author": {
+    "name": "divideby"
+  }
+}
