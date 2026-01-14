@@ -20,10 +20,10 @@ litres.ru/book/author/title-48514275/ → ID = 48514275
 
 ```bash
 # Русскоязычные книги — ЛитРес (рекомендуется)
-python3 plugins/books/scripts/fetch-toc.py --litres-id "48514275" --info
+python3 plugins/books/skills/extracting-book-toc/scripts/fetch-toc.py --litres-id "48514275" --info
 
 # Англоязычные книги — Google Books
-python3 plugins/books/scripts/fetch-toc.py --title "Deep Work" --info
+python3 plugins/books/skills/extracting-book-toc/scripts/fetch-toc.py --title "Deep Work" --info
 ```
 
 Скрипт выведет YAML frontmatter с метаданными: название, автор, обложка, страницы, ISBN.
@@ -112,5 +112,5 @@ tags: [own]
 
 После создания заметки предложи:
 
-1. Запустить `/books:toc` для извлечения оглавления
+1. Извлечь оглавление книги (skill `extracting-book-toc` активируется автоматически)
 2. Начать первую сессию с `/books:session`
