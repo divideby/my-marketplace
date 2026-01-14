@@ -12,6 +12,7 @@ This is a Claude Code plugin marketplace repository. It provides a local collect
 | ------ | ----------- | -------- |
 | **specs** | Создание спецификаций проектов (L0/L1) | `/specs:new` |
 | **books** | Чтение книг по методологии Поварнина | `/books:new`, `/books:session`, `/books:progress`, `/books:finish` |
+| **day** | Протокол дня: планирование с Obsidian-задачами | `/day:today`, `/day:checkin` |
 
 See `plugins/<name>/CLAUDE.md` for detailed plugin documentation.
 

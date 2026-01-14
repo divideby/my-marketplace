@@ -13,6 +13,11 @@
       "name": "books",
       "source": "./plugins/books",
       "description": "Пайплайн чтения книг по методологии Поварнина"
+    },
+    {
+      "name": "day",
+      "source": "./plugins/day",
+      "description": "Протокол дня: планирование и сопровождение с Obsidian-задачами"
     }
   ]
 }
