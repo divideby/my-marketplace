@@ -35,15 +35,11 @@ Use patterns to understand:
 
 ## Step 2: What's Already Done
 
-Ask user about morning routine:
+Get current time with `date` command — this is when planning starts.
 
+Ask user about morning routine (use AskUserQuestion with multiSelect=true):
 ```
-Сейчас [TIME]. Что из утренней рутины уже сделано?
-```
-
-Use AskUserQuestion with multiSelect=true:
-```
-Question: "Что уже сделано сегодня?"
+Question: "Сейчас [TIME]. Что из утренней рутины уже сделано?"
 Options:
 - "Завтрак"
 - "Медитация/дневник"
@@ -51,13 +47,7 @@ Options:
 - "Самообразование"
 ```
 
-Also ask:
-```
-Question: "Во сколько начинаем планируемую часть дня?"
-```
-(Default: current time or 10:00 if earlier)
-
-**Record start time** — this is when the planned schedule begins.
+**Start time = current time** — планирование начинается с момента запуска команды.
 
 ---
 
