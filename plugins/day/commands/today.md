@@ -126,13 +126,46 @@ For each event, get:
 
 **These events are ANCHORS** — schedule builds around them.
 
+### 4.1 Meeting Preparation
+
+**ВАЖНО:** Каждая встреча требует подготовки. После сбора встреч обязательно уточни подготовку.
+
+**Шаг 1: Спросить, какие встречи требуют подготовки:**
+
+```text
+Question: "К каким встречам нужно подготовиться?"
+Options: [список встреч из Step 4 + "Ко всем" + "Ни к каким"]
+multiSelect: true
+```
+
+**Шаг 2: Для каждой встречи, требующей подготовки, расспросить подробно:**
+
+- Что конкретно нужно подготовить? (документы, презентация, повестка, данные)
+- Сколько времени займёт подготовка? (оценка)
+- Что нужно посмотреть/прочитать заранее?
+- Есть ли зависимости от других людей?
+
+**Шаг 3: Создать задачи подготовки:**
+
+Для каждой встречи создай задачу подготовки в формате:
+
+```markdown
+- [ ] Подготовка к [Название встречи]: [что именно] #task ⏫
+```
+
+**Шаг 4: Учесть в расписании:**
+
+- Запланировать подготовку ПЕРЕД встречей (с буфером 10-15 мин)
+- Если подготовка требует deep work — поставить в утренние слоты
+- Пометить подготовку цветом `#fcd34d44` (золотой)
+
 ---
 
 ## Step 5: Day Focus
 
 Now that we know constraints, ask about priorities for FREE time:
 
-```
+```text
 Question: "Какие фокусы на свободное время?"
 Options:
 - "Deep work / coding"
@@ -148,43 +181,66 @@ Options:
 Build schedule with this priority:
 
 ### 6.1 Already Done (marked with ✅)
+
 Add completed morning routine at their typical times with ✅ prefix:
+
 ```javascript
 { time: "07:00", end: "07:30", task: "✅ Завтрак", color: "#4ade8033" },
 { time: "07:30", end: "08:00", task: "✅ Медитация", color: "#c4b5fd44" },
 ```
 
 ### 6.2 Fixed Events (ANCHORS)
+
 Place fixed events at their exact times — these CANNOT move:
+
 ```javascript
 { time: "14:00", end: "15:00", task: "📌 Встреча с командой", color: "#a78bfa44" },
 { time: "19:00", end: "19:30", task: "📌 Оплата квартиры", color: "#67e8f933" },
 ```
 
-### 6.3 Fill Free Slots
+### 6.3 Meeting Preparation (🔶)
+
+Place preparation tasks BEFORE their meetings:
+
+```javascript
+{ time: "13:00", end: "13:45", task: "🔶 Подготовка: Встреча с командой", color: "#fcd34d44" },
+{ time: "14:00", end: "15:00", task: "📌 Встреча с командой", color: "#a78bfa44" },
+```
+
+Rules:
+
+- Schedule prep based on estimated duration from Step 4.1
+- Leave 10-15 min buffer between prep end and meeting start
+- If prep requires deep work — schedule in morning slot, not just before meeting
+
+### 6.4 Fill Free Slots
+
 Distribute remaining tasks into free time slots based on:
+
 - User's focus priorities
 - Task priorities (⏫ > 🔼 > 🔽)
 - Time preferences from patterns (deep work morning, meetings afternoon)
 - Appropriate durations
 
-### 6.4 Add Breaks
+### 6.5 Add Breaks
+
 - 5-10 min between deep work blocks
 - Lunch around 13:00-14:00
 - Buffer before important meetings
 
 ### Schedule Generation Rules
 
-```
+```text
 START_TIME = user's specified start time (default: current time)
 END_TIME = 19:00-20:00 or after last fixed event
 
 1. Mark already-done as ✅
 2. Place fixed events as 📌 anchors
-3. Identify free slots between anchors
-4. Fill slots with tasks by priority
-5. Add breaks every 2-3 hours
-6. Ensure no conflicts with fixed events
+3. Place meeting preparation (🔶) before meetings
+4. Identify free slots between anchors and prep
+5. Fill slots with tasks by priority
+6. Add breaks every 2-3 hours
+7. Ensure no conflicts with fixed events or prep
 ```
 
 ---
@@ -194,7 +250,7 @@ END_TIME = 19:00-20:00 or after last fixed event
 1. Create/update `Dailies/YYYY-MM-DD.md` with DataviewJS schedule
 2. Present summary:
 
-```
+```text
 Расписание готово!
 
 ✅ Уже сделано:
@@ -203,6 +259,9 @@ END_TIME = 19:00-20:00 or after last fixed event
 📌 Фиксированные события:
 - 14:00 Встреча с командой
 - 19:00 Оплата квартиры
+
+🔶 Подготовка к встречам:
+- 13:00-13:45 Подготовка: Встреча с командой
 
 📋 Запланировано:
 - 10:00-12:00 Deep work: [task]
