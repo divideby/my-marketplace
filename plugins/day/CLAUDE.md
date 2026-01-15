@@ -22,7 +22,8 @@ day/
 │   └── plugin.json
 ├── commands/
 │   ├── today.md      # /day:today — утреннее планирование
-│   └── checkin.md    # /day:checkin — чекин и следующая задача
+│   ├── checkin.md    # /day:checkin — чекин и следующая задача
+│   └── daily.md      # /day:daily — daily standup
 ├── agents/
 │   └── meeting-processor.md  # Обработка встреч
 ├── skills/
@@ -42,6 +43,7 @@ day/
 | ------- | -------- |
 | `/day:today` | Утреннее планирование: показать задачи → спросить фокусы → сгенерировать расписание |
 | `/day:checkin` | Чекин: что сделал → отметить done → получить следующую задачу |
+| `/day:daily` | Daily standup: что сделал вчера → планы на сегодня → блокеры |
 
 ## Агенты
 
