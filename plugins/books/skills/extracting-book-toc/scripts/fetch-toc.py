@@ -82,26 +82,55 @@ def extract_litres_metadata(xml: str, book_id: str) -> dict | None:
 
 
 def extract_litres_toc(xml: str) -> list[dict] | None:
-    """Извлечь оглавление из XML ЛитРес."""
+    """Извлечь оглавление из XML ЛитРес с весами глав.
+
+    Атрибут id в XML — это позиция в электронной книге.
+    Разница между id соседних глав даёт относительный вес (объём) главы.
+    """
     if not xml or "<toc>" not in xml:
         return None
 
     chapters = []
-    for match in re.finditer(r'<toc-item[^>]*deep="(\d+)"[^>]*>([^<]+)</toc-item>', xml):
+    # Парсим deep, id и title
+    for match in re.finditer(
+        r'<toc-item[^>]*deep="(\d+)"[^>]*id="(\d+)"[^>]*>([^<]+)</toc-item>', xml
+    ):
         deep = int(match.group(1))
-        title = unescape(match.group(2).strip())
+        item_id = int(match.group(2))
+        title = unescape(match.group(3).strip())
         if title and deep > 0:
-            chapters.append({"title": title, "deep": deep})
+            chapters.append({"title": title, "deep": deep, "id": item_id})
 
-    return chapters if chapters else None
+    if not chapters:
+        return None
+
+    # Рассчитываем веса как разницу между id соседних глав
+    for i, ch in enumerate(chapters):
+        if i + 1 < len(chapters):
+            ch["weight"] = chapters[i + 1]["id"] - ch["id"]
+        else:
+            # Последняя глава — используем среднее или фиксированное значение
+            avg_weight = sum(c.get("weight", 0) for c in chapters[:-1]) // max(len(chapters) - 1, 1)
+            ch["weight"] = avg_weight if avg_weight > 0 else 100
+
+    return chapters
 
 
-def format_litres_toc(chapters: list[dict]) -> list[str]:
-    """Форматировать оглавление ЛитРес с отступами."""
+def format_litres_toc(chapters: list[dict], include_weights: bool = True) -> list[str]:
+    """Форматировать оглавление ЛитРес с отступами и весами.
+
+    Args:
+        chapters: Список глав с полями title, deep, weight
+        include_weights: Добавлять ли веса [w:N] к каждой главе
+    """
     result = []
     for ch in chapters:
         indent = "  " * (ch["deep"] - 1)
-        result.append(f"{indent}{ch['title']}")
+        title = ch["title"]
+        if include_weights and "weight" in ch:
+            result.append(f"{indent}{title} [w:{ch['weight']}]")
+        else:
+            result.append(f"{indent}{title}")
     return result
 
 
@@ -259,6 +288,8 @@ def main():
                         help="Получить метаданные книги вместо оглавления")
     parser.add_argument("--format", choices=["json", "markdown", "yaml"], default="markdown",
                         help="Формат вывода (default: markdown)")
+    parser.add_argument("--no-weights", action="store_true",
+                        help="Не добавлять веса [w:N] к главам (по умолчанию веса включены)")
 
     args = parser.parse_args()
 
@@ -307,6 +338,8 @@ def main():
     source = None
     book_url = None
 
+    include_weights = not args.no_weights
+
     # 1. ЛитРес
     if args.litres_id:
         print(f"Загружаю с ЛитРес (ID: {args.litres_id})...", file=sys.stderr)
@@ -314,7 +347,7 @@ def main():
         if xml:
             litres_chapters = extract_litres_toc(xml)
             if litres_chapters:
-                chapters = format_litres_toc(litres_chapters)
+                chapters = format_litres_toc(litres_chapters, include_weights=include_weights)
                 source = "ЛитРес"
                 book_url = f"https://www.litres.ru/book/-{args.litres_id}/"
 
