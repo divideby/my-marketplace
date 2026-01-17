@@ -8,5 +8,4 @@
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
 | #700 | 3:11 PM | 🔵 | Fetch-toc.py script implementation analyzed | ~330 |
-| #699 | " | 🔵 | Calculate-progress.py script implementation analyzed | ~305 |
 </claude-mem-context>
