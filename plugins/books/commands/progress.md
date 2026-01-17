@@ -19,7 +19,7 @@ grep -l "status: reading" Base/*.md
 Используй скрипт `calculate-progress.py` для точного расчёта:
 
 ```bash
-python3 plugins/books/skills/extracting-book-toc/scripts/calculate-progress.py "Base/Название книги.md" --format json
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/extracting-book-toc/scripts/calculate-progress.py" "Base/Название книги.md" --format json
 ```
 
 Скрипт поддерживает три метода расчёта (в порядке приоритета):
