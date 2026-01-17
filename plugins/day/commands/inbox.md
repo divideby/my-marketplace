@@ -10,6 +10,7 @@ Process inbox items through formulation criteria and categorize into nutrients.
 ## Purpose
 
 Transform unclear inbox items into:
+
 - **Concrete tasks** ready for scheduling
 - **Projects** requiring further decomposition
 - **Reference info** for storage
@@ -40,11 +41,13 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/parse-tasks.py --no-date
 Parse JSON output to get list of items.
 
 Also check for non-task inbox items:
+
 ```bash
 cat ./Inbox.md 2>/dev/null
 ```
 
 Present summary:
+
 ```text
 📥 Inbox: X items to process
 - [list items numbered]
@@ -108,6 +111,7 @@ Options:
 | "Получить ответ от X" | "Написать X: нужна ли помощь / как успехи?" |
 
 **Use Magic Fairy:**
+
 ```text
 Представь, фея дала 20 свободных минут. Что сделаешь, чтобы продвинуться к результату?
 ```
@@ -166,6 +170,7 @@ Add to today's daily note under `> [!todo]`:
 ```
 
 Or if has deadline context:
+
 ```markdown
 - [ ] [reformulated task] #task 📅 YYYY-MM-DD
 ```
@@ -182,6 +187,7 @@ Create project note or update existing:
 ```
 
 Ask user which folder:
+
 ```text
 Question: "Куда сохранить проект?"
 Header: "Папка"
@@ -194,6 +200,7 @@ Options:
 ### 4.3 Information (📚)
 
 Ask where to store:
+
 ```text
 Question: "Куда сохранить информацию?"
 Header: "Место"
@@ -222,10 +229,12 @@ After processing all items:
 ### 5.1 Remove processed items from source files
 
 For items from daily notes:
+
 - If reformulated → update the task text in place
 - If categorized differently → move to appropriate file
 
 For items from Inbox.md:
+
 - Remove processed lines
 - Keep unprocessed items
 
