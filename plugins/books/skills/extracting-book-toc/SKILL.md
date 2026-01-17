@@ -29,11 +29,11 @@ Ask the user which book needs a TOC. Get one of:
 
 ```bash
 # LitRes (recommended for Russian books)
-python3 plugins/books/skills/extracting-book-toc/scripts/fetch-toc.py --litres-id "48514275"
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/extracting-book-toc/scripts/fetch-toc.py" --litres-id "48514275"
 
 # Open Library / Google Books (for English books)
-python3 plugins/books/skills/extracting-book-toc/scripts/fetch-toc.py --isbn "9781455586691"
-python3 plugins/books/skills/extracting-book-toc/scripts/fetch-toc.py --title "Deep Work"
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/extracting-book-toc/scripts/fetch-toc.py" --isbn "9781455586691"
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/extracting-book-toc/scripts/fetch-toc.py" --title "Deep Work"
 ```
 
 Output format options:
@@ -42,7 +42,7 @@ Output format options:
 
 For metadata only (no TOC):
 ```bash
-python3 plugins/books/skills/extracting-book-toc/scripts/fetch-toc.py --litres-id "48514275" --info
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/extracting-book-toc/scripts/fetch-toc.py" --litres-id "48514275" --info
 ```
 
 ## Step 3: Handle result
