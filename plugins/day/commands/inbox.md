@@ -1,5 +1,5 @@
 ---
-description: Обработка входящих — рассортировать задачи без дат по нутриентам
+description: Обработка входящих — рассортировать задачи с #inbox по нутриентам
 allowed-tools: ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "AskUserQuestion", "TodoWrite"]
 ---
 
@@ -22,7 +22,7 @@ Transform unclear inbox items into:
 
 ## Workflow Overview
 
-1. **Collect inbox items** — tasks without dates
+1. **Collect inbox items** — tasks with `#inbox` tag
 2. **For each item:** validate against 4 criteria
 3. **Reformulate if needed** — apply patterns
 4. **Categorize** — task/project/info/meeting
@@ -32,25 +32,21 @@ Transform unclear inbox items into:
 
 ## Step 1: Collect Inbox Items
 
-Run from Obsidian vault root:
+Run from Obsidian vault root (`~/Yandex.Disk/Ocean/new-ocean/`):
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/parse-tasks.py --no-date
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/parse-tasks.py --inbox
 ```
 
-Parse JSON output to get list of items.
+Parse JSON output to get list of items with `#inbox` tag.
 
-Also check for non-task inbox items:
-
-```bash
-cat ./Inbox.md 2>/dev/null
-```
+**Note:** Inbox items are tasks marked with `#inbox #task`. The file `Inbox.md` at vault root is a DataView dashboard that queries these tags.
 
 Present summary:
 
 ```text
 📥 Inbox: X items to process
-- [list items numbered]
+- [list items numbered with source file]
 
 Начнём с первого?
 ```
@@ -163,62 +159,109 @@ After all items processed, update files:
 
 ### 4.1 Tasks (📋)
 
-Add to today's daily note under `> [!todo]`:
+After categorizing as task:
+
+1. **Remove `#inbox` tag** from the original task line
+2. **Add due date** if user specified one:
+
+Edit original task in source file:
 
 ```markdown
-- [ ] [reformulated task] #task
+# Before:
+- [ ] Some task #inbox #task
+
+# After (with date):
+- [ ] Some task #task 📅 2026-01-17
+
+# After (no date, stays in daily):
+- [ ] Some task #task
 ```
 
-Or if has deadline context:
-
-```markdown
-- [ ] [reformulated task] #task 📅 YYYY-MM-DD
-```
+**Finding the task:**
+- Use file path and line number from parse-tasks.py output
+- Edit in place using Edit tool
 
 ### 4.2 Projects (📁)
 
-Create project note or update existing:
+After categorizing as project:
+
+1. **Remove original task** from source file (it becomes a project)
+2. **Create project note** in `Base/`:
+
+Ask for project name:
+
+**Use AskUserQuestion:**
+
+```text
+Question: "Как назвать проект?"
+Header: "Название"
+Options:
+- "[suggested name based on task]"
+- "[alternative name]"
+- Other (введу название)
+```
+
+Create file at `Base/[Project Name].md`:
 
 ```markdown
 # [Project Name]
 
+#project/inprogress
+
+## Контекст
+[Original task text and any user clarification]
+
 ## Следующие шаги
-- [ ] Определить [что именно нужно] #task
-```
-
-Ask user which folder:
-
-```text
-Question: "Куда сохранить проект?"
-Header: "Папка"
-Options:
-- "Base/ (общая база)"
-- "Projects/ (активные проекты)"
-- Other (custom path)
+- [ ] Определить первый конкретный шаг #task
 ```
 
 ### 4.3 Information (📚)
 
-Ask where to store:
+After categorizing as info:
+
+1. **Remove original task** from source file
+2. **Save information** — ask where:
+
+**Use AskUserQuestion:**
 
 ```text
 Question: "Куда сохранить информацию?"
 Header: "Место"
 Options:
-- "Добавить в существующую заметку"
 - "Создать новую заметку в Base/"
-- "Добавить в Inbox.md (разберу позже)"
+- "Добавить в существующую заметку"
 ```
+
+**If new note:** Create `Base/[Info Title].md` with content
+
+**If existing note:**
+
+```text
+Question: "В какую заметку добавить?"
+Header: "Заметка"
+Options:
+- "[suggest related note from Base/]"
+- "[another suggestion]"
+- Other (укажу путь)
+```
+
+Append info to chosen note.
 
 ### 4.4 Meetings (📅)
 
-Add to today's daily note or future date:
+After categorizing as meeting:
+
+1. **Update original task** — remove `#inbox`, add date:
 
 ```markdown
-- [ ] 📅 [Meeting name] at [time] #task
+# Before:
+- [ ] Встретиться с Васей #inbox #task
+
+# After:
+- [ ] Встретиться с Васей #task 📅 2026-01-20
 ```
 
-Or create calendar event reference.
+2. **Optionally add to calendar** — ask if needed
 
 ---
 
@@ -228,15 +271,12 @@ After processing all items:
 
 ### 5.1 Remove processed items from source files
 
-For items from daily notes:
+For all items:
 
-- If reformulated → update the task text in place
-- If categorized differently → move to appropriate file
+- **Tasks/Meetings:** `#inbox` tag already removed during dispatch
+- **Projects/Info:** Original task line already deleted during dispatch
 
-For items from Inbox.md:
-
-- Remove processed lines
-- Keep unprocessed items
+No additional cleanup needed — dispatch step handles everything.
 
 ### 5.2 Present Summary
 
