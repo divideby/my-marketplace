@@ -3,7 +3,7 @@
 Parse tasks from Obsidian vault markdown files.
 
 Usage:
-    python parse-tasks.py [--due-today | --overdue | --no-date] [--path PATH]
+    python parse-tasks.py [--due-today | --overdue | --no-date | --inbox] [--path PATH]
 
 Output: JSON array of tasks with metadata.
 """
@@ -62,6 +62,7 @@ def parse_tasks_from_file(filepath: Path) -> list:
             tasks.append({
                 'file': str(filepath.relative_to(VAULT_PATH)),
                 'text': text,
+                'raw_text': raw_text,
                 'done': status.lower() == 'x',
                 'priority': priority,
                 'due': due_date,
@@ -97,6 +98,9 @@ def filter_tasks(tasks: list, filter_type: str) -> list:
     elif filter_type == 'no-date':
         return [t for t in tasks if not t['done'] and not t['due']]
 
+    elif filter_type == 'inbox':
+        return [t for t in tasks if not t['done'] and '#inbox' in t.get('raw_text', '')]
+
     elif filter_type == 'undone':
         return [t for t in tasks if not t['done']]
 
@@ -107,6 +111,7 @@ def main():
     parser.add_argument('--due-today', action='store_true', help='Tasks due today')
     parser.add_argument('--overdue', action='store_true', help='Overdue tasks')
     parser.add_argument('--no-date', action='store_true', help='Tasks without due date')
+    parser.add_argument('--inbox', action='store_true', help='Tasks with #inbox tag')
     parser.add_argument('--undone', action='store_true', help='All undone tasks')
     parser.add_argument('--path', type=str, help='Custom vault path')
 
@@ -121,6 +126,8 @@ def main():
         tasks = filter_tasks(tasks, 'overdue')
     elif args.no_date:
         tasks = filter_tasks(tasks, 'no-date')
+    elif args.inbox:
+        tasks = filter_tasks(tasks, 'inbox')
     elif args.undone:
         tasks = filter_tasks(tasks, 'undone')
 
